@@ -1,0 +1,47 @@
+# What is Prompt Engineering?
+
+Prompt engineering is the practice of designing and refining inputs to get the best possible outputs from AI language models. Think of it as learning to communicate effectively with a highly capable but literal assistant.
+
+## Why It Matters
+
+- **Better Results**: Well-crafted prompts produce more accurate, relevant, and useful responses
+- **Efficiency**: Good prompts save time by reducing back-and-forth iterations
+- **Consistency**: Structured prompts help achieve reliable outputs across similar tasks
+- **Cost Savings**: Fewer tokens used means lower API costs for those using paid services
+
+The 5-Part Prompt Template
+1. ROLE: Who is the AI acting as?
+2. CONTEXT: What's the situation/background?
+3. TASK: What specific action do you need?
+4. FORMAT: How should it be structured?
+5. CONSTRAINTS: Length, tone, what to include/avoid
+
+Example: Fujifilm Apeos C325 Printer Setup Guide
+
+[ROLE]: You are a technical writer for office equipment
+
+[CONTEXT]: New office manager needs to set up the Apeos C325 
+multifunction printer for a 15-person team. Common issue: 
+connecting to network and enabling scan-to-email.
+
+[TASK]: Create a quick setup checklist
+
+[FORMAT]: 8 numbered steps, with one troubleshooting tip
+
+[CONSTRAINTS]: Under 200 words, non-technical language, 
+mention wireless and mobile printing capabilities
+
+
+Speaker notes"
+Say: "Good morning/afternoon everyone. Today we're covering prompt engineering - essentially, how to talk to AI tools like ChatGPT or Claude to get exactly what you need. I'm using our Fujifilm printer products as examples since we all know them well."
+
+ROLE - "Who is the AI pretending to be? A technical writer? Marketing person? Customer service rep?"
+CONTEXT - "What's the situation? What problem are you solving?"
+TASK - "The specific action you need done"
+FORMAT - "How should it look? Bullets? Paragraphs? Table?"
+CONSTRAINTS - "Length limits, tone, what to include or avoid"
+
+Say: "Not every prompt needs all five parts, but the more complex your need, the more helpful this structure becomes."
+
+"Let's see this in action with our Apeos C325 office printer."
+
