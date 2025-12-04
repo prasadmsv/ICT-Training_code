@@ -1,0 +1,355 @@
+Introduction:
+
+The function display_default_config() is designed to display the default configuration settings used for generating responses in a model like ChatGPT. These configurations influence how the model produces text. The settings are useful for understanding and controlling the output of a model during inference.
+
+1. Function Overview:
+
+This function doesn’t take any arguments and simply prints the default configuration values to the console.
+
+The function begins by printing a title to indicate the purpose, followed by a separator line.
+
+Since ChatGPT does not expose a default configuration object like Google's Gemini models, we explicitly define the commonly used configuration values.
+
+2. Config Dictionary:
+
+The configuration values are stored in a dictionary named config_dict.
+
+This dictionary includes common parameters used during text generation. Let’s look at each one:
+
+temperature (default 1.0):
+
+Controls the randomness of the output.
+
+A value of 0.0 makes the model's output deterministic (predictable), while a value of 1.0 allows for more creative and diverse outputs.
+
+top_p (default 1.0):
+
+Refers to "nucleus sampling." It determines the probability distribution from which tokens are sampled.
+
+A top_p of 1.0 means the model considers the entire distribution when generating output, whereas a lower value, such as 0.1, focuses the sampling on the top 10% most probable tokens.
+
+max_output_tokens (model-dependent):
+
+This value controls the maximum number of tokens that the model can generate in one response.
+
+This is model-specific, meaning it can vary depending on the particular model being used.
+
+presence_penalty (default 0.0):
+
+Penalizes the model for repeating the same topics in its responses.
+
+This can be helpful if you want the model to avoid redundancy and stay on different topics.
+
+frequency_penalty (default 0.0):
+
+Penalizes the model for repeating the same exact words.
+
+This is useful to ensure a more varied vocabulary and avoid repetitive responses.
+
+stop (default None):
+
+Specifies a stopping sequence or token that tells the model when to stop generating text.
+
+By default, no stopping sequence is provided, so the model will continue generating text until it reaches its token limit.
+
+3. Output Format:
+
+The function iterates over the config_dict dictionary and prints each parameter's name and its default value.
+
+This helps the user understand what each parameter is and what value it is set to by default.
+
+4. Parameter Explanations:
+
+After displaying the configuration settings, the function explains what each of the parameters does:
+
+Temperature: Explains how temperature controls the randomness of the output.
+
+Top-p: Describes how top-p impacts nucleus sampling and the diversity of generated content.
+
+Max tokens: States that this parameter is model-dependent and controls the length of the output.
+
+Presence Penalty: Clarifies how it prevents the model from repeating topics.
+
+Frequency Penalty: Explains how it discourages repeating words.
+
+Stop: Describes how stop sequences work to end text generation.
+
+Conclusion:
+
+This function is an informative tool that gives a snapshot of the most commonly used default parameters in ChatGPT’s text generation.
+
+Understanding these parameters allows developers to customize the output, control its randomness, and avoid repetitive text generation, improving the user experience when interacting with the model.
+
+
+
+Speaker Notes for top_p_comparison() Code
+Slide: Purpose of the Function
+
+This function demonstrates how different top-p values affect ChatGPT’s responses.
+
+Top-p (also called nucleus sampling) controls how “wide” the model samples from its probability distribution.
+
+Lower top-p → focused, predictable responses.
+
+Higher top-p → more variety and creativity.
+
+The goal is to compare outputs side-by-side using the same prompt.
+
+Slide: Base Prompt Setup
+
+The base prompt asks ChatGPT to explain quantum computing in simple terms.
+
+It also requests three key concepts and their practical applications.
+
+This prompt is ideal because the output can show creativity without losing structure.
+
+Slide: Top-P Values
+
+We test four different top-p values: 0.1, 0.5, 0.8, 0.95.
+
+These represent a spectrum from very restrictive to very open sampling.
+
+Keeping the range helps us observe how response diversity changes.
+
+Slide: Temperature Constant
+
+Temperature is kept constant at 0.7 for fairness.
+
+This ensures the only variation comes from the top-p setting.
+
+Without fixing temperature, results would mix two variables.
+
+Slide: Looping and API Calls
+
+The code loops through each top-p value.
+
+For each value, it sends a request to the ChatGPT Responses API with:
+
+the same prompt
+
+fixed temperature
+
+varying top-p
+
+fixed output token limit
+
+This isolates top-p as the only changing factor.
+
+Slide: Extracting Response Data
+
+After receiving the response:
+
+The raw generated text is printed.
+
+Two metrics are calculated:
+
+Character length → overall size of the output
+
+Unique word count → how diverse the language is
+
+Unique words help measure how “creative” or “varied” the response becomes.
+
+Slide: Error Handling
+
+A try–except block ensures that if one API call fails, the script continues.
+
+Instead of crashing, it logs the error and moves to the next top-p value.
+
+Slide: Delay Between Calls
+
+A time.sleep(1) introduces a one-second pause.
+
+This prevents rate-limit issues and keeps print output visually separate.
+
+Slide: Summary of Expected Observations
+
+Top-p = 0.1
+
+Highly constrained → short, predictable, focused responses.
+
+Top-p = 0.5
+
+Balanced → moderately diverse language with stability.
+
+Top-p = 0.8 / 0.95
+
+Increasing creativity → more varied vocabulary and different phrasing.
+
+May include more descriptive or illustrative examples.
+
+Comparing these responses helps determine the best sampling strategy for your use case.
+
+Speaker Notes for max_tokens_comparison() Code
+Slide: Purpose of the Function
+
+This function demonstrates how the max_output_tokens parameter affects ChatGPT’s output length.
+
+max_output_tokens sets an upper limit on the number of tokens the model can generate.
+
+Useful for controlling response size in different applications (chat, summaries, reports).
+
+Slide: Base Prompt
+
+The base prompt asks ChatGPT to explain the history of the internet, including:
+
+Origins
+
+Major milestones
+
+Key technologies
+
+Chosen because the topic naturally produces variable-length content, making token limits visible.
+
+Slide: Token Limits
+
+Tested token limits: 50, 150, 300, 500.
+
+Lower values → short, concise responses.
+
+Higher values → detailed, comprehensive explanations.
+
+This allows a direct comparison of output depth and length.
+
+Slide: Looping Through Token Limits
+
+The code loops through each max_output_tokens value.
+
+For each limit:
+
+Sends a request to the ChatGPT Responses API
+
+Keeps temperature constant at 0.5 to ensure consistency
+
+Only max_output_tokens changes
+
+Slide: Extracting Response Data
+
+After the API call:
+
+The generated text is printed
+
+Metrics are calculated and printed:
+
+Character length → shows raw output size
+
+Word count → shows textual volume
+
+Estimated tokens → approximated by word_count × 1.3
+
+These metrics help quantify how token limits affect output length.
+
+Slide: Error Handling
+
+A try-except block ensures the loop continues even if an API call fails.
+
+Errors are displayed for troubleshooting.
+
+Slide: Delay Between Calls
+
+A time.sleep(1) adds a one-second pause between calls.
+
+Prevents rate-limiting issues.
+
+Makes the console output easier to read and compare.
+
+Slide: Expected Observations
+
+50 tokens → very short, summary-like response.
+
+150 tokens → concise but includes more details.
+
+300 tokens → more complete explanation with milestones.
+
+500 tokens → detailed, almost full-length article style response.
+
+Visual comparison shows how token limits directly control content length.
+
+
+Speaker Notes for stop_sequences_demo()
+Slide: Purpose of the Code
+
+This function demonstrates stop-sequence behavior in ChatGPT responses.
+
+Stop sequences are used to truncate text when certain tokens or words appear.
+
+Important when you want to limit response length or prevent the model from generating unwanted content.
+
+Since the API may not support the stop parameter, this example simulates stop-sequence handling client-side.
+
+Slide: Helper Function _truncate_on_stops
+
+Takes two inputs:
+
+text: the generated response.
+
+stops: a list of stop sequences.
+
+It finds the earliest occurrence of any stop sequence in the text.
+
+Returns the text truncated at that point.
+
+If no stop sequence is found, returns the full text.
+
+Slide: Scenarios Setup
+
+Multiple test scenarios are defined to show different stop-sequence use cases:
+
+No stop sequences – text is returned fully.
+
+Stop at numbered list item – truncates at the first occurrence of "5.".
+
+Stop at specific word – e.g., "Mars" in a story.
+
+Multiple stop sequences – truncates at the earliest of "loops" or "classes".
+
+Slide: Looping Through Scenarios
+
+Each scenario:
+
+Prints scenario name, prompt, and stop sequences.
+
+Sends a request to the ChatGPT API without a stop parameter.
+
+Uses temperature = 0.7 and max tokens = 400 for consistent behavior.
+
+Slide: Truncating Response
+
+Once the response is returned:
+
+_truncate_on_stops is applied to simulate stop-sequence behavior.
+
+Prints the truncated response.
+
+Displays the response length for comparison.
+
+Slide: Error Handling
+
+The try–except block ensures:
+
+Any API errors are caught.
+
+Script continues to the next scenario without crashing.
+
+Errors are printed clearly for debugging.
+
+Slide: Delay Between Calls
+
+time.sleep(1) introduces a 1-second pause.
+
+Avoids hitting API rate limits.
+
+Keeps output easy to read.
+
+Slide: Expected Observations
+
+No Stop Sequences: Full response generated.
+
+Stop at numbered list: Output ends before the designated item.
+
+Stop at a word: Truncation occurs at the first occurrence of the word.
+
+Multiple stop sequences: Response truncates at the earliest matching sequence.
+
+Demonstrates how to control output content even without native stop-parameter support.
+
+

@@ -1,0 +1,175 @@
+def temperature_comparison():
+    """Compare ChatGPT responses using different temperature settings in plain text table format."""
+
+    base_prompt = "Write about FUJIFILM Apeos Printers. Make it 2 paragraphs."
+    temperatures = [0.0, 0.3, 0.7, 1.0]
+
+    # Header
+    print("TEMPERATURE COMPARISON".center(80, "="))
+    print(f"Prompt: {base_prompt}")
+    print("=" * 80)
+
+    for temp in temperatures:
+        print(f"\nTemperature: {temp}")
+        print("-" * 80)
+
+        try:
+            response = client.responses.create(
+                model=MODEL,
+                input=base_prompt,
+                temperature=temp,
+                max_output_tokens=30
+            )
+
+            text = response.output_text
+            word_count = len(text.split())
+            char_count = len(text)
+
+            print(f"Response:\n{text}")
+            print("\nStats:")
+            print(f"  Word Count      : {word_count}")
+            print(f"  Character Count : {char_count}")
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+        print("-" * 80)
+
+
+# Run the test
+temperature_comparison()
+
+
+def top_p_comparison():
+    """Compare ChatGPT responses using different top-p values."""
+    
+    base_prompt = (
+        "Explain quantum computing in simple terms. "
+        "Include 3 key concepts and their practical applications."
+    )
+    top_p_values = [0.1, 0.5, 0.8, 0.95]
+
+    print("Top-P Comparison\n" + "=" * 40)
+
+    for top_p in top_p_values:
+        print(f"\nTop-P: {top_p}")
+        print("-" * 40)
+
+        try:
+            response = client.responses.create(
+                model=MODEL,
+                input=base_prompt,
+                temperature=0.7,   # keep constant
+                top_p=top_p,
+                max_output_tokens=40
+            )
+
+            text = response.output_text
+            print(text)
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+        print("-" * 40)
+
+
+# Run the comparison
+top_p_comparison()
+
+
+def max_tokens_comparison():
+    """Compare ChatGPT responses using different max_output_tokens values."""
+    
+    base_prompt = (
+        "Explain the history of the internet, from its origins to modern day. "
+        "Include major milestones and key technologies."
+    )
+    
+    token_limits = [50, 150, 300, 500]
+
+    print("Max Output Tokens Comparison\n" + "=" * 40)
+
+    for max_tokens in token_limits:
+        print(f"\nMax Output Tokens: {max_tokens}")
+        print("-" * 40)
+
+        try:
+            response = client.responses.create(
+                model=MODEL,
+                input=base_prompt,
+                temperature=0.5,
+                max_output_tokens=max_tokens
+            )
+
+            text = response.output_text
+            print(text)
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+        print("-" * 40)
+
+
+# Run the comparison
+max_tokens_comparison()
+
+def _truncate_on_stops(text: str, stops):
+    """Truncate text at the earliest occurrence of any stop sequence."""
+    if not stops:
+        return text
+    earliest = None
+    for s in stops:
+        idx = text.find(s)
+        if idx != -1 and (earliest is None or idx < earliest):
+            earliest = idx
+    return text if earliest is None else text[:earliest]
+
+
+def stop_sequences_demo():
+    """Demonstrate stop-sequence behavior without using unsupported 'stop' param."""
+    
+    scenarios = [
+        {"name": "No Stop Sequences", "prompt": "List the planets in our solar system:", "stop_sequences": None},
+        {"name": "Stop at numbered list", "prompt": "List the planets in our solar system:", "stop_sequences": ["5."]},
+        {"name": "Stop at specific word", "prompt": "Write a story about space exploration. Mention Mars.", "stop_sequences": ["Mars"]},
+        {"name": "Multiple stop sequences", "prompt": "Explain programming concepts: variables, functions, loops, and classes.", "stop_sequences": ["loops", "classes"]},
+    ]
+
+    for scenario in scenarios:
+        print(f"\nScenario: {scenario['name']}")
+        print(f"Prompt: {scenario['prompt']}")
+        print(f"Stop Sequences: {scenario['stop_sequences']}")
+        print("-" * 50)
+
+        try:
+            response = client.responses.create(
+                model=MODEL,
+                input=scenario["prompt"],
+                temperature=0.7,
+                max_output_tokens=400
+            )
+
+            text = response.output_text
+            final_output = _truncate_on_stops(text, scenario["stop_sequences"])
+
+            print("Generated Response:")
+            print(final_output)
+            print(f"Response Length: {len(final_output)} characters")
+
+        except Exception as e:
+            print(f"Error: {e}")
+
+        print("=" * 50)
+        time.sleep(1)
+
+
+# Run the demo
+stop_sequences_demo()
+
+
+
+
+
+
+
+
