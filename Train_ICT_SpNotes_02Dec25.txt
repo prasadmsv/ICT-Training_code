@@ -1,0 +1,474 @@
+Speaker Notes:
+Opening & Welcome
+Good afternoon, everyone.
+
+First, I want to thank Prasad once again for taking the excellent initiative to organize this AI training session.
+
+Today, we will dive deep into the world of prompts and prompt engineering, exploring how to design effective prompts and work with practical code that interacts with AI models.
+
+Prompt:
+======
+What is a Prompt?
+A prompt is the input or instruction given to an AI model to generate a response.
+
+It guides the model to produce relevant and meaningful outputs.
+
+The quality of the prompt often determines how good or useful the AI’s answer will be.
+
+Slide: Purpose of a Prompt
+"The main purpose of a prompt is to guide the AI model."
+"By providing clear instructions, the model can generate relevant and meaningful output."
+
+"Think of it as setting the direction or context for the AI’s response."
+
+Slide: Why Are Prompts Important?
+"Prompts are crucial because the quality of your prompt directly impacts the output."
+
+"Good prompts help the model understand exactly what you want, leading to better and more accurate answers."
+
+"This also helps avoid confusion or irrelevant responses."
+
+Slide: Types of Prompts
+"Prompts can take many forms depending on the task or desired outcome."
+"Some common types include:"
+"Questions — asking the model to provide information or explanation."
+
+"Statements — giving the model some information or context."
+
+"Commands — directing the model to perform an action."
+
+"Context plus request — providing background to better inform the response."
+
+"Examples combined with instructions — showing the model how to respond by example."
+
+"Essentially, any kind of text or input that guides the AI on what kind of output you want qualifies as a prompt."
+
+Slide: Summary
+"To summarize, the better your prompt, the better your AI’s output."
+"Understanding the types and crafting clear prompts is key to effectively using AI models."
+
+Prompt Engineering:
+===================
+"Prompt engineering is a vital practice for working with language models. It involves creating, testing, and refining prompts so the AI understands your intent and provides precise results."
+
+I'm using our Fujifilm printer products as examples since we all know them well."
+
+ROLE - "Who is the AI pretending to be? A technical writer? Marketing person? Customer service rep?"
+CONTEXT - "What's the situation? What problem are you solving?"
+TASK - "The specific action you need done"
+FORMAT - "How should it look? Bullets? Paragraphs? Table?"
+CONSTRAINTS - "Length limits, tone, what to include or avoid"
+
+Say: "Not every prompt needs all five parts, but the more complex your need, the more helpful this structure becomes."
+
+"Let's see this in action with our Apeos C325 office printer."
+
+
+Prompt Techniques:
+==================
+"This table highlights several prompt engineering techniques with examples focused on Fujifilm products.
+
+By applying the right technique, we can improve the relevance, clarity, and usefulness of AI-generated content, especially when working with real-world products and scenarios."
+
+Understanding this is crucial to crafting effective prompts and getting better results from language models."
+
+
+"When we talk about ‘zero-shot’ or ‘few-shot’ prompting, the term ‘shot’ actually refers to the number of example demonstrations given to the AI model in the prompt.
+
+In zero-shot prompting, we give the model no examples at all. We only provide an instruction or question, and expect the AI to generate a response based purely on its prior training and general understanding.
+
+In few-shot prompting, we provide the model with a small number of examples—these could be question-answer pairs, completions, or other demonstrations of the desired task. This helps the AI understand the pattern or format we're expecting for the final answer.
+Think of 'shot' as a teaching demonstration: 
+
+zero-shot means the AI learns the task without any demonstrations, while few-shot means it sees a few examples to guide its response.
+
+You are a knowledgeable technical support specialist for Fujifilm printers.
+
+Example 1:
+Q: My Fujifilm printer is not printing. What should I check first?
+A: Please ensure the printer is powered on and connected properly to your computer or network.
+
+Example 2:
+Q: The printed pages have streaks or lines. How can I fix this?
+A: Try cleaning the print heads and check if the toner cartridge needs replacement.
+
+Now answer:
+
+Q: How do I connect my Fujifilm printer to Wi-Fi?
+A:
+
+Using few-shot prompting often improves output quality because the model can infer the rules or style from the examples, especially for complex or specific tasks.
+
+Key Configuration Parameters in LLMs
+====================================
+Introduction:
+"When working with large language models like GPT, it’s important to understand the key parameters that control how the model generates text. These parameters help us customize the output to suit different applications—whether you want precise answers or creative writings."
+
+Temperature:
+"Temperature controls the randomness of the output.
+A low temperature value—close to zero—makes the model very deterministic; it picks the most probable next words, so the output is consistent but sometimes repetitive.
+
+A higher temperature adds randomness, making the response more creative or varied, which is great for storytelling or brainstorming."
+
+Max Tokens:
+"This sets the maximum length of the generated response, measured in tokens, which are typically words or parts of words.
+It’s useful to control response size, especially to manage API costs or keep outputs concise."
+
+Top-p (Nucleus Sampling):
+"Top-p limits the model to choose from the smallest set of possible next tokens whose combined probability exceeds the threshold p.
+
+This lets the model focus on likely options while still introducing some variability.
+
+For example, setting top-p to 0.9 means the model picks tokens from the top 90% probable tokens."
+
+Top-k:
+"An alternative to top-p, top-k restricts sampling to the top k most probable tokens at each step.
+
+It tightens control to a fixed number of options, which can reduce randomness."
+
+Stop Tokens / Sequences:
+"These specify strings that signal the model to end generation, useful to prevent overly long or off-topic responses.
+
+For example, you might use newline characters or custom delimiters to mark completion."
+
+Frequency and Presence Penalties:
+"Frequency penalty discourages the model from repeating the same tokens too often, helping avoid redundancy.
+Presence penalty encourages the model to introduce new topics or words, fostering diversity in longer texts."
+
+Best_of and Logprobs:
+"Some APIs support generating multiple completions and returning the best one, trading cost and latency for quality.
+Logprobs give insight into the model’s token-level confidence, useful for debugging or interpretability."
+
+Conclusion:
+"Tuning these parameters effectively allows us to tailor LLM outputs to specific needs—be it accuracy, creativity, brevity, or style.
+Understanding them empowers better prompt engineering and application design."
+
+In summary, these parameters provide powerful knobs to control length, randomness, creativity, repetition, and termination of AI-generated outputs. Understanding and experimenting with them is fundamental for effective prompt engineering and achieving the best results in practical AI applications.
+
+Open AI API
+===========
+
+Now, let's see how to access Large Language Models (LLMs) using the OpenAI API."
+
+"LLMs like GPT are powerful AI systems capable of understanding and generating human language."
+
+"OpenAI provides an API that allows developers to easily interact with these models over the internet."
+
+"The OpenAI API provides a way for applications to interact with powerful AI models by sending various types of input — such as text or images — and receiving model-generated responses."
+
+"This interaction happens over HTTPS, similar to other web services, making integration smooth and familiar to developers."
+
+"Essentially, you call endpoints with your inputs and receive responses you can use in your application."
+
+Slide 2: Getting an API Key
+"The first step to use the OpenAI API is obtaining an API key."
+
+"To get this key, you need to sign up or log in on OpenAI's platform at https://platform.openai.com."
+
+"Once logged in, navigate to the 'API Keys' section under your account dashboard."
+
+"Here, you can create a new API key by clicking the 'Create new secret key' button."
+
+"This key is very important — think of it as your password to access the API."
+
+"Ensure you keep it secure and never expose it in client-side applications or public repositories."
+
+Slide 3: Demo — Setting Up the API Key
+"Let me show you a quick demo on how to set up and use the API key in your development environment."
+
+(Switch to live demo or pre-recorded screen)
+
+"First, copy your newly created API key from the OpenAI dashboard."
+"Next, configure your environment variable or securely store this key in your codebase."
+
+"For example, in a Python script, you can set it like this: openai.api_key = 'YOUR_API_KEY'."
+
+"From there, your application can use this key to authenticate requests and start calling OpenAI's endpoints to generate responses."
+
+Slide 4: Summary and Best Practices
+"To summarize, the API key acts as the gatekeeper to OpenAI’s service."
+
+"Always keep it confidential, and regularly rotate your keys if you suspect exposure."
+
+"By correctly setting up your key, you can unlock many AI-powered features easily."
+
+"In the next section, we will explore example API calls and how to handle responses."
+
+
+Code walk through OpenAI ChatGPT API
+==================================
+
+"This code snippet demonstrates how to set up a Python client to connect to the OpenAI ChatGPT API and handle possible errors gracefully."
+
+Step 1: Importing the OpenAI Client Library
+"from openai import OpenAI imports the client needed to interact with OpenAI services."
+
+"This is the official SDK for accessing OpenAI API endpoints."
+
+Step 2: Configuring the API Key
+"Before making any calls, you must configure the client with a valid API key."
+
+"The code shows two ways — the commented-out variable or directly in the constructor."
+
+"Important: For security, avoid hardcoding keys in production – use environment variables or vaults."
+
+Step 3: Testing the Connection: Listing Available Models
+"client.models.list() fetches a list of available AI models you can use."
+
+"Printing the number of models found verifies both connectivity and authentication."
+
+Step 4: Iterating and Displaying Models
+"The loop prints the IDs of the first 10 models, giving insight into model options."
+
+"Model IDs help when specifying which model to use for your API requests."
+
+Step 5: Error Handling Using Try-Except
+"The code surrounds the API call with a try-except block."
+
+"If anything goes wrong — e.g., invalid key, no internet, server error — the exception is caught."
+
+"The error message is printed to help with debugging."
+
+"A friendly reminder prompts users to verify their API key and internet connection."
+
+Summary
+"This pattern demonstrates a robust way to initialize your OpenAI client, check access, and handle errors."
+
+"Error handling is essential to build reliable applications that gracefully handle failures."
+"Next steps would involve making actual requests to generate text or perform other AI tasks."
+
+
+
+Demo-Config parameters
+======================
+Introduction:
+
+1. Function Overview:
+
+This function doesn’t take any arguments and simply prints the default configuration values to the console.
+
+The function begins by printing a title to indicate the purpose, followed by a separator line.
+
+Since ChatGPT does not expose a default configuration object like Google's Gemini models, we explicitly define the commonly used configuration values.
+
+2. Config Dictionary:
+
+The configuration values are stored in a dictionary named config_dict.
+
+This dictionary includes common parameters used during text generation. Let’s look at each one:
+
+temperature (default 1.0):
+
+Controls the randomness of the output.
+
+A value of 0.0 makes the model's output deterministic (predictable), while a value of 1.0 allows for more creative and diverse outputs.
+
+top_p (default 1.0):
+
+Refers to "nucleus sampling." It determines the probability distribution from which tokens are sampled.
+
+A top_p of 1.0 means the model considers the entire distribution when generating output, whereas a lower value, such as 0.1, focuses the sampling on the top 10% most probable tokens.
+
+max_output_tokens (model-dependent):
+
+This value controls the maximum number of tokens that the model can generate in one response.
+
+This is model-specific, meaning it can vary depending on the particular model being used.
+
+presence_penalty (default 0.0):
+
+Penalizes the model for repeating the same topics in its responses.
+
+This can be helpful if you want the model to avoid redundancy and stay on different topics.
+
+frequency_penalty (default 0.0):
+
+Penalizes the model for repeating the same exact words.
+
+This is useful to ensure a more varied vocabulary and avoid repetitive responses.
+
+stop (default None):
+
+Specifies a stopping sequence or token that tells the model when to stop generating text.
+
+By default, no stopping sequence is provided, so the model will continue generating text until it reaches its token limit.
+
+3. Output Format:
+
+The function iterates over the config_dict dictionary and prints each parameter's name and its default value.
+
+This helps the user understand what each parameter is and what value it is set to by default.
+
+4. Parameter Explanations:
+
+After displaying the configuration settings, the function explains what each of the parameters does:
+
+Temperature: Explains how temperature controls the randomness of the output.
+
+Top-p: Describes how top-p impacts nucleus sampling and the diversity of generated content.
+
+Max tokens: States that this parameter is model-dependent and controls the length of the output.
+
+Presence Penalty: Clarifies how it prevents the model from repeating topics.
+
+Frequency Penalty: Explains how it discourages repeating words.
+
+Stop: Describes how stop sequences work to end text generation.
+
+Conclusion:
+
+This function is an informative tool that gives a snapshot of the most commonly used default parameters in ChatGPT’s text generation.
+
+Understanding these parameters allows developers to customize the output, control its randomness, and avoid repetitive text generation, improving the user experience when interacting with the model.
+
+Speaker Notes for top_p_comparison() Code
+==========================================
+Slide: Purpose of the Function
+
+This function demonstrates how different top-p values affect ChatGPT’s responses.
+
+Top-p (also called nucleus sampling) controls how “wide” the model samples from its probability distribution.
+
+Lower top-p → focused, predictable responses.
+
+Higher top-p → more variety and creativity.
+
+Slide: Base Prompt Setup
+
+The base prompt asks ChatGPT to explain quantum computing in simple terms.
+
+Slide: Top-P Values
+
+We test four different top-p values: 0.1, 0.5, 0.8, 0.95.
+
+Slide: Temperature Constant
+
+Temperature is kept constant at 0.7 for fairness.
+
+This ensures the only variation comes from the top-p setting.
+
+the same prompt, fixed temperature, varying top-p and fixed output token limit
+
+This isolates top-p as the only changing factor.
+
+Two metrics are calculated:
+
+Character length → overall size of the output
+
+Unique word count → how diverse the language is
+
+Unique words help measure how “creative” or “varied” the response becomes.
+
+Slide: Summary of Expected Observations
+
+Top-p = 0.1
+
+Highly constrained → short, predictable, focused responses.
+
+Top-p = 0.5
+
+Balanced → moderately diverse language with stability.
+
+Top-p = 0.8 / 0.95
+
+Increasing creativity → more varied vocabulary and different phrasing.
+
+
+Speaker Notes for max_tokens_comparison() Code
+==============================================
+This function demonstrates how the max_output_tokens parameter affects ChatGPT’s output length.
+
+max_output_tokens sets an upper limit on the number of tokens the model can generate.
+
+Useful for controlling response size in different applications (chat, summaries, reports).
+
+Slide: Base Prompt
+
+The base prompt asks ChatGPT to explain the history of the internet, including:
+
+Tested token limits: 50, 150, 300, 500.
+
+Lower values → short, concise responses.
+
+Higher values → detailed, comprehensive explanations.
+
+This allows a direct comparison of output depth and length.
+
+Keeps temperature constant at 0.5 to ensure consistency
+
+Only max_output_tokens changes
+
+Slide: Extracting Response Data
+
+Metrics are calculated and printed:
+
+Character length → shows raw output size
+
+Word count → shows textual volume
+
+Estimated tokens → approximated by word_count × 1.3
+
+These metrics help quantify how token limits affect output length.
+
+50 tokens → very short, summary-like response.
+
+150 tokens → concise but includes more details.
+
+300 tokens → more complete explanation with milestones.
+
+500 tokens → detailed, almost full-length article style response.
+
+Speaker Notes for stop_sequences_demo()
+=======================================
+This function demonstrates stop-sequence behavior in ChatGPT responses.
+
+Stop sequences are used to truncate text when certain tokens or words appear.
+
+Important when you want to limit response length or prevent the model from generating unwanted content.
+
+Since the API may not support the stop parameter, this example simulates stop-sequence handling client-side.
+
+Slide: Helper Function _truncate_on_stops
+
+Takes two inputs:
+
+text: the generated response.
+
+stops: a list of stop sequences.
+
+It finds the earliest occurrence of any stop sequence in the text.
+
+Returns the text truncated at that point.
+
+If no stop sequence is found, returns the full text.
+
+No stop sequences – text is returned fully.
+
+Stop at numbered list item – truncates at the first occurrence of "5.".
+
+Stop at specific word – e.g., "Mars" in a story.
+
+Multiple stop sequences – truncates at the earliest of "loops" or "classes".
+
+Uses temperature = 0.7 and max tokens = 400 for consistent behavior.
+
+Slide: Truncating Response
+
+Once the response is returned:
+
+_truncate_on_stops is applied to simulate stop-sequence behavior.
+
+Prints the truncated response.
+
+Displays the response length for comparison.
+
+
+No Stop Sequences: Full response generated.
+
+Stop at numbered list: Output ends before the designated item.
+
+Stop at a word: Truncation occurs at the first occurrence of the word.
+
+Multiple stop sequences: Response truncates at the earliest matching sequence.
+
+Demonstrates how to control output content even without native stop-parameter support.
