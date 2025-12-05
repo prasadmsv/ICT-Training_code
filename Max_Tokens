@@ -1,0 +1,377 @@
+import time
+from openai import OpenAI
+
+# Configuration
+API_KEY = "your-api-key-here"
+MODEL = "gpt-4"
+
+client = OpenAI(api_key=API_KEY)
+
+def max_tokens_comparison_html():
+    """Demonstrate max_tokens parameter using ChatGPT and output as HTML table"""
+    
+    print("📏 Max Output Tokens Comparison")
+    print("=" * 80)
+    
+    # Base prompt - Fujifilm related
+    base_prompt = (
+        "Explain the history and evolution of Fujifilm's Instax instant camera line, "
+        "from its origins to modern day. Include major milestones, key technologies, "
+        "and how it revolutionized instant photography."
+    )
+    
+    token_limits = [50, 150, 300, 500]
+    
+    print(f"🎯 Base Prompt: {base_prompt}")
+    print("\n" + "=" * 80)
+    
+    # Start building HTML table
+    html_output = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Max Tokens Comparison - ChatGPT</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+        .fujifilm-logo {
+            color: #e60012;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .prompt-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #e60012;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        tr:hover {
+            background: rgba(0,0,0,0.02);
+        }
+        .token-50 { background: #ffebee; }
+        .token-150 { background: #fff3e0; }
+        .token-300 { background: #e8f5e9; }
+        .token-500 { background: #e3f2fd; }
+        .max-tokens-cell {
+            font-weight: bold;
+            font-size: 20px;
+            color: #1e3c72;
+        }
+        .output-text {
+            line-height: 1.6;
+            font-size: 14px;
+            max-width: 600px;
+        }
+        .stats {
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .truncated {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        .complete {
+            color: #388e3c;
+            font-weight: bold;
+        }
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .bar {
+            height: 30px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        .info-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="fujifilm-logo">FUJIFILM</div>
+        <h1>📏 Max Tokens Comparison - ChatGPT (GPT-4)</h1>
+        <p style="margin: 10px 0 0 0; font-size: 18px;">Understanding Token Limits in AI Generation</p>
+    </div>
+    
+    <div class="prompt-box">
+        <strong>📋 Base Prompt:</strong> """ + base_prompt + """
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 10%;">Max Tokens</th>
+                <th style="width: 45%;">Generated Response</th>
+                <th style="width: 10%; text-align: center;">Characters</th>
+                <th style="width: 10%; text-align: center;">Words</th>
+                <th style="width: 10%; text-align: center;">Est. Tokens</th>
+                <th style="width: 15%; text-align: center;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
+    
+    results = []
+    
+    # Generate responses for each token limit
+    for max_tokens in token_limits:
+        print(f"\n📏 MAX OUTPUT TOKENS: {max_tokens}")
+        print("-" * 40)
+        
+        try:
+            # ChatGPT API call with token limit
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=[
+                    {"role": "user", "content": base_prompt}
+                ],
+                temperature=0.5,
+                max_tokens=max_tokens
+            )
+            
+            output = response.choices[0].message.content
+            finish_reason = response.choices[0].finish_reason
+            
+            # Calculate statistics
+            char_length = len(output)
+            word_count = len(output.split())
+            estimated_tokens = int(word_count * 1.3)  # Rough estimate
+            
+            # Determine if response was truncated
+            if finish_reason == "length":
+                status = "TRUNCATED"
+                status_class = "truncated"
+            else:
+                status = "COMPLETE"
+                status_class = "complete"
+            
+            # Determine row class
+            row_class = f"token-{max_tokens}"
+            
+            # Print to console
+            print("📝 Generated Response:")
+            print(output)
+            print(f"\n📊 Actual Length: {char_length} characters")
+            print(f"📊 Word Count: {word_count} words")
+            print(f"📊 Estimated Tokens: ~{estimated_tokens}")
+            print(f"📊 Finish Reason: {finish_reason}")
+            
+            # Store results
+            results.append({
+                'max_tokens': max_tokens,
+                'output': output,
+                'char_length': char_length,
+                'word_count': word_count,
+                'estimated_tokens': estimated_tokens,
+                'status': status
+            })
+            
+            # Add row to HTML table
+            html_output += f"""
+            <tr class="{row_class}">
+                <td class="max-tokens-cell">{max_tokens}</td>
+                <td class="output-text">{output}</td>
+                <td class="stats">{char_length}</td>
+                <td class="stats">{word_count}</td>
+                <td class="stats">{estimated_tokens}</td>
+                <td class="stats {status_class}">{status}</td>
+            </tr>
+"""
+            
+        except Exception as e:
+            print(f"❌ Error: {e}")
+            html_output += f"""
+            <tr>
+                <td class="max-tokens-cell">{max_tokens}</td>
+                <td colspan="5" style="color: red;">Error: {str(e)}</td>
+            </tr>
+"""
+        
+        print("\n" + "=" * 80)
+        time.sleep(1)  # Rate limiting
+    
+    # Close table
+    html_output += """
+        </tbody>
+    </table>
+"""
+    
+    # Add visual comparison chart
+    if results:
+        html_output += """
+    <div class="chart-container">
+        <h3>📊 Visual Comparison - Word Count by Token Limit</h3>
+"""
+        max_words = max(r['word_count'] for r in results)
+        colors = ['#f44336', '#ff9800', '#4caf50', '#2196f3']
+        
+        for i, result in enumerate(results):
+            width_percent = (result['word_count'] / max_words * 100) if max_words > 0 else 0
+            html_output += f"""
+        <div class="bar" style="width: {width_percent}%; background: {colors[i]};">
+            {result['max_tokens']} tokens → {result['word_count']} words
+        </div>
+"""
+        
+        html_output += """
+    </div>
+"""
+    
+    # Add insights section
+    html_output += """
+    <div class="info-box">
+        <h3>💡 Key Insights About max_tokens Parameter</h3>
+        <ul>
+            <li><strong>What is max_tokens?</strong> The maximum number of tokens (word pieces) the AI can generate in a response.</li>
+            <li><strong>Rough Estimate:</strong> 1 token ≈ 0.75 words or 1 word ≈ 1.3 tokens (varies by language and complexity).</li>
+            <li><strong>Truncation:</strong> When max_tokens is reached, the response stops mid-sentence (status: TRUNCATED).</li>
+            <li><strong>Complete Responses:</strong> If the AI finishes naturally before hitting the limit (status: COMPLETE).</li>
+        </ul>
+        
+        <h3 style="margin-top: 25px;">🎯 Recommended Token Limits for Fujifilm Content</h3>
+        <ul>
+            <li><strong>50-100 tokens:</strong> Short taglines, product names, brief descriptions</li>
+            <li><strong>150-250 tokens:</strong> Product descriptions, social media posts, short emails</li>
+            <li><strong>300-500 tokens:</strong> Detailed product specs, blog post introductions, press releases</li>
+            <li><strong>500-1000 tokens:</strong> Technical documentation, full articles, comprehensive guides</li>
+            <li><strong>1000+ tokens:</strong> Long-form content, white papers, detailed tutorials</li>
+        </ul>
+        
+        <h3 style="margin-top: 25px;">⚠️ Best Practices</h3>
+        <ul>
+            <li>Always set max_tokens to prevent runaway generation and control costs</li>
+            <li>Set it higher than needed to avoid truncation (you can always use less)</li>
+            <li>Monitor the finish_reason in API responses to detect truncation</li>
+            <li>For critical content, add 20-30% buffer to your estimated token needs</li>
+        </ul>
+        
+        <p style="margin-top: 20px;"><strong>Generated:</strong> """ + time.strftime("%Y-%m-%d %H:%M:%S") + """</p>
+    </div>
+</body>
+</html>
+"""
+    
+    # Save HTML to file
+    output_file = "max_tokens_comparison_chatgpt.html"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_output)
+    
+    print(f"\n✅ HTML table saved to: {output_file}")
+    print("📄 Open the file in your browser to view the formatted results!")
+    
+    return results
+
+
+# Alternative: Console-only output (matches your original format)
+def max_tokens_comparison_console():
+    """Demonstrate max_tokens parameter with console output only"""
+    print("📏 Max Output Tokens Comparison")
+    print("=" * 40)
+
+    base_prompt = (
+        "Explain the history and evolution of Fujifilm's Instax instant camera line. "
+        "Include major milestones and key technologies."
+    )
+
+    token_limits = [50, 150, 300, 500]
+
+    print(f"🎯 Base Prompt: {base_prompt}")
+    print("\n" + "=" * 80)
+
+    for max_tokens in token_limits:
+        print(f"\n📏 MAX OUTPUT TOKENS: {max_tokens}")
+        print("-" * 40)
+
+        try:
+            # ChatGPT API with different token limits
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=[
+                    {"role": "user", "content": base_prompt}
+                ],
+                temperature=0.5,
+                max_tokens=max_tokens
+            )
+
+            output = response.choices[0].message.content
+
+            print("📝 Generated Response:")
+            print(output)
+
+            print(f"\n📊 Actual Length: {len(output)} characters")
+            print(f"📊 Word Count: {len(output.split())} words")
+            print(f"📊 Estimated Tokens: ~{len(output.split()) * 1.3:.0f}")
+            print(f"📊 Finish Reason: {response.choices[0].finish_reason}")
+
+        except Exception as e:
+            print(f"❌ Error: {e}")
+
+        print("\n" + "=" * 80)
+        time.sleep(1)
+
+
+# Run the comparison
+if __name__ == "__main__":
+    print("Choose output format:")
+    print("1. HTML Table (saved to file)")
+    print("2. Console Output Only")
+    
+    choice = input("\nEnter choice (1 or 2): ").strip()
+    
+    if choice == "1":
+        results = max_tokens_comparison_html()
+    else:
+        max_tokens_comparison_console()
