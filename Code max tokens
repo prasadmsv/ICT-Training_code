@@ -1,0 +1,289 @@
+import time
+from anthropic import Anthropic
+
+# Initialize client
+API_KEY = "your-api-key-here"
+client = Anthropic(api_key=API_KEY)
+MODEL = "claude-sonnet-4-20250514"
+
+def top_p_comparison_html():
+    """Compare different top-p values and output results as HTML table"""
+    
+    print("🎯 Top-P (Nucleus Sampling) Comparison - Fujifilm Instax Mini 12")
+    print("=" * 80)
+    
+    base_prompt = (
+        "Write a 40-word product tagline for Fujifilm Instax Mini 12. "
+        "Make it engaging and suitable for marketing."
+    )
+    
+    top_p_values = [0.1, 0.5, 0.8, 0.95]
+    results = []
+    
+    print(f"🎯 Base Prompt: {base_prompt}")
+    print("\n" + "=" * 80)
+    
+    # Generate responses for each top_p value
+    for top_p in top_p_values:
+        print(f"\n🔄 Generating with top_p={top_p}...")
+        
+        try:
+            response = client.messages.create(
+                model=MODEL,
+                max_tokens=100,
+                temperature=0.7,        # Keep constant for fair comparison
+                top_p=top_p,           # Variable we're testing
+                messages=[
+                    {"role": "user", "content": base_prompt}
+                ]
+            )
+            
+            output_text = response.content[0].text
+            word_count = len(output_text.split())
+            unique_words = len(set(output_text.lower().split()))
+            
+            # Determine characteristics based on top_p value
+            if top_p <= 0.3:
+                characteristics = "Predictable, safe words, similar across runs"
+                category = "Focused"
+            elif top_p <= 0.6:
+                characteristics = "More varied language, still coherent"
+                category = "Balanced"
+            elif top_p <= 0.85:
+                characteristics = "Creative word choices, unique phrasing"
+                category = "Creative"
+            else:
+                characteristics = "Unexpected words, more experimental"
+                category = "Wide Open"
+            
+            results.append({
+                'top_p': top_p,
+                'category': category,
+                'output': output_text,
+                'characteristics': characteristics,
+                'word_count': word_count,
+                'unique_words': unique_words
+            })
+            
+            print(f"✅ Generated: {output_text[:50]}...")
+            
+        except Exception as e:
+            print(f"❌ Error with top_p={top_p}: {e}")
+            results.append({
+                'top_p': top_p,
+                'category': 'Error',
+                'output': f'Error: {str(e)}',
+                'characteristics': 'N/A',
+                'word_count': 0,
+                'unique_words': 0
+            })
+        
+        time.sleep(1)  # Rate limiting
+    
+    # Generate HTML table
+    html_output = generate_html_table(results, base_prompt)
+    
+    # Save to file
+    output_file = "top_p_comparison_results.html"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_output)
+    
+    print(f"\n✅ HTML table saved to: {output_file}")
+    print("\n" + "=" * 80)
+    
+    return html_output
+
+
+def generate_html_table(results, prompt):
+    """Generate formatted HTML table from results"""
+    
+    # Color mapping for different top_p ranges
+    color_map = {
+        0.1: {'bg': '#fff3e0', 'text': '#e65100'},
+        0.5: {'bg': '#e8f5e9', 'text': '#2e7d32'},
+        0.8: {'bg': '#f3e5f5', 'text': '#6a1b9a'},
+        0.95: {'bg': '#fce4ec', 'text': '#c2185b'}
+    }
+    
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top-P Comparison Results - Fujifilm Instax Mini 12</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }}
+        
+        .header {{
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }}
+        
+        .header h1 {{
+            margin: 0;
+            font-size: 32px;
+        }}
+        
+        .prompt-box {{
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #e60012;
+        }}
+        
+        .prompt-box strong {{
+            color: #e60012;
+        }}
+        
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }}
+        
+        thead {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }}
+        
+        th {{
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }}
+        
+        td {{
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }}
+        
+        tr:last-child td {{
+            border-bottom: none;
+        }}
+        
+        .top-p-cell {{
+            font-weight: bold;
+            font-size: 16px;
+        }}
+        
+        .category {{
+            font-size: 12px;
+            font-weight: normal;
+            display: block;
+            margin-top: 5px;
+        }}
+        
+        .output-text {{
+            font-style: italic;
+            line-height: 1.6;
+        }}
+        
+        .stats {{
+            text-align: center;
+            font-weight: 600;
+        }}
+        
+        .footer {{
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }}
+        
+        .footer h3 {{
+            margin-top: 0;
+            color: #2e7d32;
+        }}
+        
+        .footer ul {{
+            line-height: 1.8;
+        }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Top-P (Nucleus Sampling) Comparison</h1>
+        <p style="margin: 10px 0 0 0; font-size: 18px;">Fujifilm Instax Mini 12 Tagline Generation</p>
+    </div>
+    
+    <div class="prompt-box">
+        <strong>Base Prompt:</strong> {prompt}
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 12%;">top_p Value</th>
+                <th style="width: 45%;">Generated Tagline</th>
+                <th style="width: 28%;">Characteristics</th>
+                <th style="width: 8%; text-align: center;">Words</th>
+                <th style="width: 7%; text-align: center;">Unique</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
+    
+    # Add rows for each result
+    for result in results:
+        top_p = result['top_p']
+        colors = color_map.get(top_p, {'bg': '#ffffff', 'text': '#000000'})
+        
+        html += f"""
+            <tr style="background: {colors['bg']};">
+                <td class="top-p-cell" style="color: {colors['text']};">
+                    {top_p}
+                    <span class="category">({result['category']})</span>
+                </td>
+                <td class="output-text">"{result['output']}"</td>
+                <td>{result['characteristics']}</td>
+                <td class="stats">{result['word_count']}</td>
+                <td class="stats">{result['unique_words']}</td>
+            </tr>
+"""
+    
+    html += """
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <h3>📊 Key Insights</h3>
+        <ul>
+            <li><strong>Lower top_p (0.1-0.3):</strong> Best for technical documentation, specifications, and consistent outputs</li>
+            <li><strong>Medium top_p (0.5-0.7):</strong> Balanced choice for product descriptions, emails, and general business content</li>
+            <li><strong>Higher top_p (0.8-0.9):</strong> Ideal for creative marketing copy, brainstorming, and varied content</li>
+            <li><strong>Very high top_p (0.95-1.0):</strong> Most creative and experimental, good for taglines and unique content</li>
+        </ul>
+        
+        <p><strong>Note:</strong> Temperature was held constant at 0.7 for all tests to isolate the effect of top_p.</p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px; color: #666; font-size: 12px;">
+        Generated on """ + time.strftime("%Y-%m-%d %H:%M:%S") + """
+    </div>
+</body>
+</html>
+"""
+    
+    return html
+
+
+# Run the comparison
+if __name__ == "__main__":
+    html_result = top_p_comparison_html()
+    print("\n📄 Open 'top_p_comparison_results.html' in your browser to view the formatted results!")
