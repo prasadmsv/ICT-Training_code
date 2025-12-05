@@ -1,1 +1,470 @@
+import time
+client = OpenAI(api_key=API_KEY)
 
+def stop_sequences_demo_html():
+    """Demonstrate stop sequences with OpenAI API and output as HTML table"""
+    
+    print("🛑 Stop Sequences Demonstration")
+    print("=" * 80)
+    
+    # Define test scenarios with Fujifilm-related content
+    scenarios = [
+        {
+            "name": "No Stop Sequences",
+            "prompt": "List the key features of FUJIFILM Apeos C325 printer with descriptions:",
+            "stop_sequences": None
+        },
+        {
+            "name": "Stop at List Item",
+            "prompt": "List the key features of FUJIFILM Apeos C325 printer with descriptions:",
+            "stop_sequences": ["4."]
+        },
+        {
+            "name": "Stop at Specific Word",
+            "prompt": "Write about FUJIFILM Instax instant cameras. Mention the different models including Mini, Square, and Wide formats.",
+            "stop_sequences": ["Square"]
+        },
+        {
+            "name": "Multiple Stop Sequences",
+            "prompt": "Explain FUJIFILM product lines: cameras, printers, medical imaging, and optical devices.",
+            "stop_sequences": ["medical", "optical"]
+        },
+        {
+            "name": "Stop at Section Marker",
+            "prompt": "Write a product description for FUJIFILM Instax Mini 12. Include sections: Features, Benefits, and Target Audience.",
+            "stop_sequences": ["Benefits:", "Target"]
+        }
+    ]
+    
+    # Start building HTML
+    html_output = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stop Sequences Demo - OpenAI GPT-4</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+        .fujifilm-logo {
+            color: #e60012;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .info-banner {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+        tr:hover {
+            background: rgba(0,0,0,0.02);
+        }
+        .scenario-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #1e3c72;
+        }
+        .prompt-text {
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        .stop-sequences {
+            background: #ffebee;
+            padding: 8px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #c62828;
+        }
+        .no-stop {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .output-text {
+            line-height: 1.6;
+            font-size: 14px;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .stats {
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .truncated-indicator {
+            background: #f44336;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .complete-indicator {
+            background: #4caf50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .info-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+            margin-bottom: 20px;
+        }
+        .comparison-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .comparison-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .code-example {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="fujifilm-logo">FUJIFILM</div>
+        <h1>🛑 Stop Sequences Demonstration - OpenAI GPT-4</h1>
+        <p style="margin: 10px 0 0 0; font-size: 18px;">Controlling AI Output Length and Content</p>
+    </div>
+    
+    <div class="info-banner">
+        <strong>⚠️ Note:</strong> OpenAI's chat completions API supports the <code>stop</code> parameter to halt generation 
+        at specific sequences. This demonstration shows how different stop sequences affect output.
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 18%;">Scenario</th>
+                <th style="width: 15%;">Stop Sequences</th>
+                <th style="width: 47%;">Generated Response</th>
+                <th style="width: 10%; text-align: center;">Chars</th>
+                <th style="width: 10%; text-align: center;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
+    
+    results = []
+    
+    # Test each scenario
+    for i, scenario in enumerate(scenarios, 1):
+        print(f"\n🛑 SCENARIO {i}: {scenario['name']}")
+        print(f"🎯 Prompt: {scenario['prompt']}")
+        print(f"🛑 Stop Sequences: {scenario['stop_sequences']}")
+        print("-" * 60)
+        
+        try:
+            # OpenAI API call with stop parameter
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=[
+                    {"role": "user", "content": scenario['prompt']}
+                ],
+                temperature=0.7,
+                max_tokens=400,
+                stop=scenario['stop_sequences']  # Native stop parameter support
+            )
+            
+            output = response.choices[0].message.content
+            finish_reason = response.choices[0].finish_reason
+            char_length = len(output)
+            
+            # Determine if stopped by sequence or completed naturally
+            if finish_reason == "stop" and scenario['stop_sequences']:
+                status = "STOPPED"
+                status_indicator = "truncated-indicator"
+                stopped_at = "at stop sequence"
+            elif finish_reason == "length":
+                status = "MAX TOKENS"
+                status_indicator = "truncated-indicator"
+                stopped_at = "max tokens reached"
+            else:
+                status = "COMPLETE"
+                status_indicator = "complete-indicator"
+                stopped_at = "completed naturally"
+            
+            # Print to console
+            print("📝 Generated Response:")
+            print(output)
+            print(f"\n📊 Response Length: {char_length} characters")
+            print(f"📊 Finish Reason: {finish_reason}")
+            print(f"📊 Status: {stopped_at}")
+            
+            # Store results
+            results.append({
+                'scenario': scenario['name'],
+                'prompt': scenario['prompt'],
+                'stop_sequences': scenario['stop_sequences'],
+                'output': output,
+                'char_length': char_length,
+                'status': status
+            })
+            
+            # Format stop sequences for display
+            if scenario['stop_sequences']:
+                stop_display = ', '.join([f'"{s}"' for s in scenario['stop_sequences']])
+                stop_class = "stop-sequences"
+            else:
+                stop_display = "None"
+                stop_class = "stop-sequences no-stop"
+            
+            # Add row to HTML table
+            html_output += f"""
+            <tr>
+                <td>
+                    <div class="scenario-name">{scenario['name']}</div>
+                    <div class="prompt-text">{scenario['prompt']}</div>
+                </td>
+                <td>
+                    <div class="{stop_class}">{stop_display}</div>
+                </td>
+                <td>
+                    <div class="output-text">{output}</div>
+                </td>
+                <td class="stats">{char_length}</td>
+                <td class="stats">
+                    <span class="{status_indicator}">{status}</span>
+                </td>
+            </tr>
+"""
+            
+        except Exception as e:
+            print(f"❌ Error: {e}")
+            html_output += f"""
+            <tr>
+                <td>
+                    <div class="scenario-name">{scenario['name']}</div>
+                </td>
+                <td colspan="4" style="color: red;">Error: {str(e)}</td>
+            </tr>
+"""
+        
+        print("\n" + "=" * 80)
+        time.sleep(1)  # Rate limiting
+    
+    # Close table
+    html_output += """
+        </tbody>
+    </table>
+"""
+    
+    # Add comparison section
+    html_output += """
+    <div class="comparison-section">
+        <div class="comparison-card">
+            <h3>🎯 Without Stop Sequences</h3>
+            <p><strong>Behavior:</strong> AI continues until it naturally completes the response or hits max_tokens limit.</p>
+            <p><strong>Use Cases:</strong></p>
+            <ul>
+                <li>Full product descriptions</li>
+                <li>Complete blog posts</li>
+                <li>Comprehensive documentation</li>
+            </ul>
+            <p><strong>Example:</strong> "Write a complete guide about Fujifilm printers"</p>
+        </div>
+        
+        <div class="comparison-card">
+            <h3>🛑 With Stop Sequences</h3>
+            <p><strong>Behavior:</strong> AI stops immediately when it generates any of the specified sequences.</p>
+            <p><strong>Use Cases:</strong></p>
+            <ul>
+                <li>Limiting to specific sections</li>
+                <li>Generating structured lists</li>
+                <li>Controlling output format</li>
+            </ul>
+            <p><strong>Example:</strong> "List features" with stop=["5."] to get only first 4 items</p>
+        </div>
+    </div>
+"""
+    
+    # Add code example
+    html_output += """
+    <div class="info-box">
+        <h3>💻 Code Example - Using Stop Sequences</h3>
+        
+        <div class="code-example">response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[{"role": "user", "content": prompt}],
+    temperature=0.7,
+    max_tokens=400,
+    stop=["5.", "Benefits:", "###"]  # <-- Stop sequences
+)
+
+# AI will stop at first occurrence of any sequence</div>
+        
+        <h3 style="margin-top: 25px;">🎯 Common Use Cases for Stop Sequences</h3>
+        
+        <h4>1. Limiting List Items</h4>
+        <p><strong>Prompt:</strong> "List the top 10 features of Apeos printers"</p>
+        <p><strong>Stop:</strong> <code>["5."]</code> - Gets only first 4 items</p>
+        
+        <h4>2. Stopping at Section Headers</h4>
+        <p><strong>Prompt:</strong> "Write product documentation with sections: Overview, Features, Setup"</p>
+        <p><strong>Stop:</strong> <code>["Features:", "Setup:"]</code> - Gets only Overview section</p>
+        
+        <h4>3. Preventing Unwanted Content</h4>
+        <p><strong>Prompt:</strong> "Describe our printers but don't discuss competitors"</p>
+        <p><strong>Stop:</strong> <code>["competitor", "vs", "compared to"]</code> - Prevents comparisons</p>
+        
+        <h4>4. Structured Format Control</h4>
+        <p><strong>Prompt:</strong> "Generate product specs in table format"</p>
+        <p><strong>Stop:</strong> <code>["---", "###"]</code> - Stops at markdown separators</p>
+        
+        <h4>5. Multiple Stop Points</h4>
+        <p><strong>Prompt:</strong> "Explain camera features: sensor, lens, battery, screen"</p>
+        <p><strong>Stop:</strong> <code>["battery", "screen"]</code> - Stops at first match (sensor and lens only)</p>
+        
+        <h3 style="margin-top: 25px;">⚠️ Important Notes</h3>
+        <ul>
+            <li><strong>First Match Wins:</strong> AI stops at the earliest occurrence of ANY stop sequence</li>
+            <li><strong>Exact Match:</strong> Stop sequences are case-sensitive: "Stop" ≠ "stop"</li>
+            <li><strong>Maximum of 4:</strong> OpenAI allows up to 4 stop sequences per request</li>
+            <li><strong>Partial Words:</strong> Be careful - stop="the" will trigger on "the", "them", "their", etc.</li>
+            <li><strong>Whitespace Matters:</strong> "5." is different from "5. " (with space)</li>
+        </ul>
+        
+        <h3 style="margin-top: 25px;">💡 Best Practices for Fujifilm Content</h3>
+        <ul>
+            <li><strong>Product Lists:</strong> Use numbered stops like "5." or "10." to control list length</li>
+            <li><strong>Documentation:</strong> Use section markers like "###" or "---" as stop points</li>
+            <li><strong>Structured Content:</strong> Define clear section headers and use them as stops</li>
+            <li><strong>Cost Control:</strong> Stop sequences save tokens = reduce API costs</li>
+            <li><strong>Format Consistency:</strong> Combine with prompts that define output structure</li>
+        </ul>
+        
+        <p style="margin-top: 20px;"><strong>Generated:</strong> """ + time.strftime("%Y-%m-%d %H:%M:%S") + """</p>
+    </div>
+</body>
+</html>
+"""
+    
+    # Save HTML to file
+    output_file = "stop_sequences_demo_gpt.html"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_output)
+    
+    print(f"\n✅ HTML table saved to: {output_file}")
+    print("📄 Open the file in your browser to view the formatted results!")
+    
+    return results
+
+
+# Alternative: Console-only output
+def stop_sequences_demo_console():
+    """Console-only demonstration of stop sequences"""
+    print("🛑 Stop Sequences Demonstration")
+    print("=" * 40)
+
+    scenarios = [
+        {"name": "No Stop Sequences", "prompt": "List FUJIFILM Apeos C325 features:", "stop_sequences": None},
+        {"name": "Stop at numbered item", "prompt": "List FUJIFILM Apeos C325 features:", "stop_sequences": ["4."]},
+        {"name": "Stop at specific word", "prompt": "Write about FUJIFILM Instax cameras, including Mini, Square, and Wide.", "stop_sequences": ["Square"]},
+        {"name": "Multiple stop sequences", "prompt": "Explain FUJIFILM products: cameras, printers, medical, optical.", "stop_sequences": ["medical", "optical"]},
+    ]
+
+    for scenario in scenarios:
+        print(f"\n🛑 SCENARIO: {scenario['name']}")
+        print(f"🎯 Prompt: {scenario['prompt']}")
+        print(f"🛑 Stop Sequences: {scenario['stop_sequences']}")
+        print("-" * 60)
+
+        try:
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=[{"role": "user", "content": scenario['prompt']}],
+                temperature=0.7,
+                max_tokens=400,
+                stop=scenario['stop_sequences']
+            )
+
+            output = response.choices[0].message.content
+
+            print("📝 Generated Response:")
+            print(output)
+            print(f"\n📊 Response Length: {len(output)} characters")
+            print(f"📊 Finish Reason: {response.choices[0].finish_reason}")
+
+        except Exception as e:
+            print(f"❌ Error: {e}")
+
+        print("\n" + "=" * 80)
+        time.sleep(1)
+
+
+# Run the demonstration
+if __name__ == "__main__":
+    print("Choose output format:")
+    print("1. HTML Table (saved to file)")
+    print("2. Console Output Only")
+    
+    choice = input("\nEnter choice (1 or 2): ").strip()
+    
+    if choice == "1":
+        results = stop_sequences_demo_html()
+    else:
+        stop_sequences_demo_console()
