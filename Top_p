@@ -1,0 +1,439 @@
+import time
+from openai import OpenAI
+
+# Initialize client
+API_KEY = "your-api-key-here"
+client = OpenAI(api_key=API_KEY)
+MODEL = "gpt-4"
+
+def top_p_comparison_html():
+    """Compare different top-p values using ChatGPT and output as HTML table"""
+    
+    print("🎯 Top-P (Nucleus Sampling) Comparison - Fujifilm Instax Mini 12")
+    print("=" * 80)
+    
+    base_prompt = (
+        "Write a 40-word product tagline for Fujifilm Instax Mini 12. "
+        "Make it engaging and suitable for marketing."
+    )
+    
+    top_p_values = [0.1, 0.5, 0.8, 0.95]
+    results = []
+    
+    print(f"🎯 Base Prompt: {base_prompt}")
+    print("\n" + "=" * 80)
+    
+    # Generate responses for each top_p value
+    for top_p in top_p_values:
+        print(f"\n🔄 Generating with top_p={top_p}...")
+        print("-" * 40)
+        
+        try:
+            # OpenAI Chat Completion API with top_p sampling
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=[
+                    {"role": "user", "content": base_prompt}
+                ],
+                temperature=0.7,        # Keep constant for fair comparison
+                top_p=top_p,           # Variable we're testing
+                max_tokens=100
+            )
+            
+            output_text = response.choices[0].message.content
+            word_count = len(output_text.split())
+            unique_words = len(set(output_text.lower().split()))
+            char_length = len(output_text)
+            
+            # Determine characteristics based on top_p value
+            if top_p <= 0.3:
+                characteristics = "Predictable, safe words, similar across runs"
+                category = "Focused"
+            elif top_p <= 0.6:
+                characteristics = "More varied language, still coherent"
+                category = "Balanced"
+            elif top_p <= 0.85:
+                characteristics = "Creative word choices, unique phrasing"
+                category = "Creative"
+            else:
+                characteristics = "Unexpected words, more experimental"
+                category = "Wide Open"
+            
+            results.append({
+                'top_p': top_p,
+                'category': category,
+                'output': output_text,
+                'characteristics': characteristics,
+                'word_count': word_count,
+                'unique_words': unique_words,
+                'char_length': char_length
+            })
+            
+            print(f"📝 Generated Response:")
+            print(f"{output_text}\n")
+            print(f"📊 Response Length: {char_length} characters")
+            print(f"📊 Word Count: {word_count} words")
+            print(f"📊 Unique Words: {unique_words} words")
+            print(f"✅ Success!")
+            
+        except Exception as e:
+            print(f"❌ Error with top_p={top_p}: {e}")
+            results.append({
+                'top_p': top_p,
+                'category': 'Error',
+                'output': f'Error: {str(e)}',
+                'characteristics': 'N/A',
+                'word_count': 0,
+                'unique_words': 0,
+                'char_length': 0
+            })
+        
+        print("\n" + "=" * 80)
+        time.sleep(1)  # Rate limiting
+    
+    # Generate HTML table
+    html_output = generate_html_table(results, base_prompt)
+    
+    # Save to file
+    output_file = "top_p_comparison_results.html"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write(html_output)
+    
+    print(f"\n✅ HTML table saved to: {output_file}")
+    print("📄 Open the file in your browser to view formatted results!")
+    print("\n" + "=" * 80)
+    
+    return html_output
+
+
+def generate_html_table(results, prompt):
+    """Generate formatted HTML table from results"""
+    
+    # Color mapping for different top_p ranges
+    color_map = {
+        0.1: {'bg': '#fff3e0', 'text': '#e65100'},
+        0.5: {'bg': '#e8f5e9', 'text': '#2e7d32'},
+        0.8: {'bg': '#f3e5f5', 'text': '#6a1b9a'},
+        0.95: {'bg': '#fce4ec', 'text': '#c2185b'}
+    }
+    
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top-P Comparison Results - Fujifilm Instax Mini 12</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }}
+        
+        .header {{
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }}
+        
+        .header h1 {{
+            margin: 0;
+            font-size: 32px;
+        }}
+        
+        .fujifilm-logo {{
+            color: #e60012;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }}
+        
+        .prompt-box {{
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #e60012;
+        }}
+        
+        .prompt-box strong {{
+            color: #e60012;
+        }}
+        
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }}
+        
+        thead {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }}
+        
+        th {{
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }}
+        
+        td {{
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+            vertical-align: top;
+        }}
+        
+        tr:last-child td {{
+            border-bottom: none;
+        }}
+        
+        tr:hover {{
+            background: rgba(0,0,0,0.02);
+        }}
+        
+        .top-p-cell {{
+            font-weight: bold;
+            font-size: 18px;
+        }}
+        
+        .category {{
+            font-size: 12px;
+            font-weight: normal;
+            display: block;
+            margin-top: 5px;
+            opacity: 0.8;
+        }}
+        
+        .output-text {{
+            font-style: italic;
+            line-height: 1.6;
+            color: #333;
+        }}
+        
+        .stats {{
+            text-align: center;
+            font-weight: 600;
+            font-size: 16px;
+        }}
+        
+        .footer {{
+            margin-top: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }}
+        
+        .footer h3 {{
+            margin-top: 0;
+            color: #2e7d32;
+        }}
+        
+        .footer ul {{
+            line-height: 1.8;
+        }}
+        
+        .summary-stats {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }}
+        
+        .stat-card {{
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }}
+        
+        .stat-card h3 {{
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+        }}
+        
+        .stat-card p {{
+            margin: 10px 0 0 0;
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e3c72;
+        }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="fujifilm-logo">FUJIFILM</div>
+        <h1>🎯 Top-P (Nucleus Sampling) Comparison</h1>
+        <p style="margin: 10px 0 0 0; font-size: 18px;">Instax Mini 12 Tagline Generation Analysis</p>
+    </div>
+    
+    <div class="prompt-box">
+        <strong>📋 Base Prompt:</strong> {prompt}
+    </div>
+    
+    <div class="summary-stats">
+        <div class="stat-card">
+            <h3>Tests Run</h3>
+            <p>{len(results)}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Avg Word Count</h3>
+            <p>{sum(r['word_count'] for r in results) // len(results)}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Temperature</h3>
+            <p>0.7</p>
+        </div>
+        <div class="stat-card">
+            <h3>Model</h3>
+            <p style="font-size: 20px;">GPT-4</p>
+        </div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 12%;">top_p Value</th>
+                <th style="width: 42%;">Generated Tagline</th>
+                <th style="width: 26%;">Characteristics</th>
+                <th style="width: 8%; text-align: center;">Words</th>
+                <th style="width: 7%; text-align: center;">Unique</th>
+                <th style="width: 5%; text-align: center;">Chars</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
+    
+    # Add rows for each result
+    for result in results:
+        top_p = result['top_p']
+        colors = color_map.get(top_p, {'bg': '#ffffff', 'text': '#000000'})
+        
+        html += f"""
+            <tr style="background: {colors['bg']};">
+                <td class="top-p-cell" style="color: {colors['text']};">
+                    {top_p}
+                    <span class="category">({result['category']})</span>
+                </td>
+                <td class="output-text">"{result['output']}"</td>
+                <td>{result['characteristics']}</td>
+                <td class="stats">{result['word_count']}</td>
+                <td class="stats">{result['unique_words']}</td>
+                <td class="stats" style="font-size: 12px;">{result['char_length']}</td>
+            </tr>
+"""
+    
+    html += """
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <h3>📊 Key Insights About top_p Parameter</h3>
+        <ul>
+            <li><strong>top_p = 0.1 (Focused):</strong> Best for technical documentation, specifications, and consistent outputs. Uses only the most probable words.</li>
+            <li><strong>top_p = 0.5 (Balanced):</strong> Balanced choice for product descriptions, emails, and general business content. Good mix of consistency and variety.</li>
+            <li><strong>top_p = 0.8 (Creative):</strong> Ideal for creative marketing copy, brainstorming, and varied content. More linguistic diversity.</li>
+            <li><strong>top_p = 0.95 (Wide Open):</strong> Most creative and experimental, good for taglines and unique content. Maximum vocabulary range.</li>
+        </ul>
+        
+        <h3 style="margin-top: 25px;">🔬 Technical Details</h3>
+        <ul>
+            <li><strong>Temperature:</strong> Held constant at 0.7 for all tests to isolate the effect of top_p</li>
+            <li><strong>Model:</strong> GPT-4 (OpenAI)</li>
+            <li><strong>top_p Definition:</strong> Nucleus sampling - limits token selection to smallest set with cumulative probability ≥ top_p</li>
+            <li><strong>Use Case:</strong> Fujifilm Instax Mini 12 marketing tagline generation</li>
+        </ul>
+        
+        <h3 style="margin-top: 25px;">💡 Recommendations for Fujifilm Content</h3>
+        <ul>
+            <li><strong>Product Specs/Documentation:</strong> Use top_p = 0.1-0.3</li>
+            <li><strong>Product Descriptions:</strong> Use top_p = 0.5-0.7</li>
+            <li><strong>Social Media Posts:</strong> Use top_p = 0.7-0.8</li>
+            <li><strong>Creative Taglines:</strong> Use top_p = 0.8-0.95</li>
+        </ul>
+    </div>
+    
+    <div style="text-align: center; margin-top: 30px; padding: 20px; background: white; border-radius: 8px;">
+        <p style="color: #666; font-size: 12px; margin: 0;">
+            <strong>Generated on:</strong> """ + time.strftime("%Y-%m-%d %H:%M:%S") + """<br>
+            <strong>API:</strong> OpenAI GPT-4 | <strong>Framework:</strong> OpenAI Python Client
+        </p>
+    </div>
+</body>
+</html>
+"""
+    
+    return html
+
+
+# Alternative function for console-only output (your original format)
+def top_p_comparison_console():
+    """Compare different top-p values with console output only"""
+    print("🎯 Top-P (Nucleus Sampling) Comparison")
+    print("=" * 45)
+
+    base_prompt = (
+        "Write a 40-word product tagline for Fujifilm Instax Mini 12. "
+        "Make it engaging and suitable for marketing."
+    )
+
+    top_p_values = [0.1, 0.5, 0.8, 0.95]
+
+    print(f"🎯 Base Prompt: {base_prompt}")
+    print("\n" + "=" * 80)
+
+    for top_p in top_p_values:
+        print(f"\n🎯 TOP-P: {top_p}")
+        print("-" * 40)
+
+        try:
+            # OpenAI Chat API with top_p sampling
+            response = client.chat.completions.create(
+                model=MODEL,
+                messages=[
+                    {"role": "user", "content": base_prompt}
+                ],
+                temperature=0.7,        # constant for fairness
+                top_p=top_p,
+                max_tokens=100
+            )
+
+            output = response.choices[0].message.content
+
+            print("📝 Generated Response:")
+            print(output)
+
+            print(f"\n📊 Response Length: {len(output)} characters")
+            print(f"📊 Unique Words: {len(set(output.lower().split()))} words")
+
+        except Exception as e:
+            print(f"❌ Error: {e}")
+
+        print("\n" + "=" * 80)
+        time.sleep(1)
+
+
+# Run the comparison
+if __name__ == "__main__":
+    print("Choose output format:")
+    print("1. HTML Table (saved to file)")
+    print("2. Console Output Only")
+    
+    choice = input("\nEnter choice (1 or 2): ").strip()
+    
+    if choice == "1":
+        html_result = top_p_comparison_html()
+    else:
+        top_p_comparison_console()
