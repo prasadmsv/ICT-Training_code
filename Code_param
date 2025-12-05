@@ -1,0 +1,31 @@
+def display_default_config():
+    """Display default ChatGPT generation configuration"""
+    print("📋 Default ChatGPT Generation Configuration")
+    print("=" * 50)
+
+    # ChatGPT does NOT expose a default config object like Gemini.
+    # So we define the commonly used defaults explicitly:
+    config_dict = {
+        "temperature": 1.0,        # typical default
+        "top_p": 1.0,              # default nucleus sampling
+        "max_output_tokens": "Model-dependent (can vary by model)",
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "stop": None               # no stop sequence by default
+    }
+
+    # Print config values
+    for param, value in config_dict.items():
+        print(f"   {param}: {value}")
+
+    # Explanations
+    print("\n📚 Parameter Explanations:")
+    print("   • Temperature: Controls randomness (0.0 = deterministic, 1.0 = creative)")
+    print("   • Top-p: Nucleus sampling threshold (0.1 = focused, 1.0 = fully open)")
+    print("   • Max tokens: Maximum tokens ChatGPT is allowed to generate")
+    print("   • Presence penalty: Penalizes repeating topics")
+    print("   • Frequency penalty: Penalizes repeating exact words")
+    print("   • Stop: Sequence(s) that cause generation to stop")
+
+# Run it
+display_default_config()
